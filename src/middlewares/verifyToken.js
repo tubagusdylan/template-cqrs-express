@@ -15,7 +15,7 @@ const verifyToken = async (req, res, next) => {
 
     const checkedToken = await verifyAccessToken(token);
     if (checkedToken.err) {
-        return sendResponse(checkedToken, res);
+        return sendResponse(checkedToken, res, ERROR.FORBIDDEN);
     }
 
     req.userMeta = checkedToken.data;

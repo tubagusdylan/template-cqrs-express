@@ -2,6 +2,7 @@ const cors = require("./cors");
 const express = require("express");
 const routes = require("../routes");
 const config = require("../config/global_config");
+const cookieParser = require("cookie-parser");
 const pgConfig = config.get("/postgresqlUrl");
 const pgConnectionPool = require("../helpers/databases/postgresql/connection");
 
@@ -17,6 +18,7 @@ class AppServer {
   _middlewares() {
     this.server.use(cors);
     this.server.use(express.json());
+    this.server.use(cookieParser());
   }
 
   _routes() {

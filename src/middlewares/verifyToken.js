@@ -1,22 +1,26 @@
 const {UnauthorizedError, ForbiddenError} = require("../helpers/errors");
 const { sendResponse } = require("../helpers/utils/response");
-const jwt = require("jsonwebtoken");
+const { getToken, verifyAccessToken } = require("../helpers/auth/jwt_helper");
+const { ERROR } = require("../helpers/http-status/status_code");
 const wrapper = require("../helpers/utils/wrapper");
-const config = require("../config/global_config");
 
-const verifyToken = (req, res, next) => {
-    const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
+const verifyToken = async (req, res, next) => {
+    const result = {err: null, data: null};
+    const token = getToken(req.headers["authorization"]);
+    
     if(!token){
-        return sendResponse(wrapper.error(new UnauthorizedError("User Unauthorized")), res);
+        result.err = new UnauthorizedError("User Unauthorized");
+        return wrapper.response(res, 'fail', result, "Invalid", ERROR.UNAUTHORIZED);
     }
 
-   jwt.verify(token, config.get("/accessTokenSecret"), (err, decoded) => {
-    if (err) {
-        return sendResponse(wrapper.error(new ForbiddenError("Token Expired")), res);
+    const checkedToken = await verifyAccessToken(token);
+    if (checkedToken.err) {
+        return sendResponse(checkedToken, res);
     }
+
+    req.userMeta = checkedToken.data;
+    
     next();
-   })
 
 }
 

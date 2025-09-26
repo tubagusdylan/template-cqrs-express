@@ -1,4 +1,4 @@
-const {UnauthorizedError, ForbiddenError} = require("../helpers/errors");
+const { UnauthorizedError } = require("../helpers/errors");
 const { sendResponse } = require("../helpers/utils/response");
 const { getToken, verifyAccessToken } = require("../helpers/auth/jwt_helper");
 const { ERROR } = require("../helpers/http-status/status_code");
